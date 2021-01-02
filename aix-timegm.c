@@ -9,37 +9,49 @@
 time_t timegm (struct tm *tm);
 time_t timegm (struct tm *tm)
 {
+    static const int msum [2][12] = {
+        { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334},        /* normal years */
+        { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335}        /* leap years */
+    };
+    static const int mlen [2][12] = {
+        { 31, 28, 31, 30,  31,  30,  31,  31,  30,  31,  30, 31},
+        { 31, 29, 31, 30,  31,  30,  31,  31,  30,  31,  30, 31}
+    };
+    static const int tmstr_year= 1900; /* base of 'tm_year' in 'struct tm' */
+    static const int epoch_year= 1970; /* unix timestamp epoch */
+    static const int base_year=  -9999;  /* start of a 400-year period: used to be 1601,
+                                            but this allows larger range (in 64 bit)
+                                            mind you, this is proleptic Gregorian */
     int year, ytmp, dtmp, ytmpe, dtmpe;
     int isleapyear;
-    static int msum [2][12] = {
-	{ 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334},	/* normal years */
-	{ 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335}	/* leap years */
-    };
-    static int mlen [2][12] = {
-	{ 31, 28, 31, 30,  31,  30,  31,  31,  30,  31,  30, 31},
-	{ 31, 29, 31, 30,  31,  30,  31,  31,  30,  31,  30, 31}
-    };
     long long t;
 
     if (!tm) return -1;
 
-    year = tm->tm_year+1900;
+    year = tm->tm_year + tmstr_year;
     isleapyear= (year%4==0) - (year%100==0) + (year%400==0);
 
     if (year<0  || year>9999  ||
-	tm->tm_mon<0  || tm->tm_mon>11 ||
-	tm->tm_mday<1 || tm->tm_mday>mlen[isleapyear][tm->tm_mon] ||
-	tm->tm_hour<0 || tm->tm_hour>23 ||
-	tm->tm_min<0  || tm->tm_min>59 ||
-	tm->tm_min<0  || tm->tm_sec>59) return -1;
+        tm->tm_mon<0  || tm->tm_mon>11 ||
+        tm->tm_mday<1 || tm->tm_mday>mlen[isleapyear][tm->tm_mon] ||
+        tm->tm_hour<0 || tm->tm_hour>23 ||
+        tm->tm_min<0  || tm->tm_min>59 ||
+        tm->tm_min<0  || tm->tm_sec>59) return -1;
 
-    ytmp = year - 1601;
+/* days between 'current year' and 'epoch_year' has to be calculated
+   in three steps: */
+
+/* 1. days between current year and 'base_year' */
+    ytmp = year - base_year;
     dtmp = ytmp*365 + ytmp/4 - ytmp/100 + ytmp/400;
 
-    ytmpe = 1970 - 1601;
-    dtmpe = ytmpe*365 + ytmpe/4 - ytmpe/100 + ytmpe/400; /* = 134685 + 92 - 3 + 0 = 134774 */
+/* 2. days between 'epoch year' and 'base_year' */
+    ytmpe = epoch_year - base_year;
+    dtmpe = ytmpe*365 + ytmpe/4 - ytmpe/100 + ytmpe/400;
 
+/* 3. days between 'current year' and 'epoch_year' */
     t  = dtmp - dtmpe;
+
     t += msum[isleapyear][tm->tm_mon];
     t += tm->tm_mday-1;
 
@@ -54,7 +66,7 @@ time_t timegm (struct tm *tm)
 
 #if LONG_MAX == 2147483647L
     if (t<LONG_MIN || t>LONG_MAX) {
-	t= -1;
+        t= -1;
     }
 #endif
 
