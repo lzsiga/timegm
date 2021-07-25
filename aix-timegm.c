@@ -31,7 +31,7 @@ time_t timegm (struct tm *tm)
     year = tm->tm_year + tmstr_year;
     isleapyear= (year%4==0) - (year%100==0) + (year%400==0);
 
-    if (year<0  || year>9999  ||
+    if (year<-9999    || year>9999  ||
         tm->tm_mon<0  || tm->tm_mon>11 ||
         tm->tm_mday<1 || tm->tm_mday>mlen[isleapyear][tm->tm_mon] ||
         tm->tm_hour<0 || tm->tm_hour>23 ||
