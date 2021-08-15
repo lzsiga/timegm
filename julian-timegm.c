@@ -132,3 +132,8 @@ static const int32_t yearoffs=  9999;
 
     return tm;
 }
+
+int tstamp2jd (const time_t *t, JulianDate *jd)
+{
+    long long tmp= t;
+}

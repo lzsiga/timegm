@@ -9,11 +9,12 @@
 
 static void Test1 (time_t t);
 static void Test2 (int y, int m, int d);
+static void Test3 (int y, int m, int d, int H, int M, int S);
 
 int main (void) {
     int i;
 
-    Test1 (0); /* PGD 1970-01-01 */
+    Test1 (0); /* PGC 1970-01-01, PJC 1969-12-19 */
     for (i=1; i<24; ++i) Test1 (i*50*60+i);
     for (i=1; i<24; ++i) Test1 (i*24L*3600);
     Test2 ( 2021,  7, 11);
@@ -22,7 +23,8 @@ int main (void) {
     Test2 (  204,  2, 29);
     Test2 (  204,  3,  1);
     Test2 (  299, 12, 31);
-    Test2 (-4713,  1,  1);
+    Test2 (-4712,  1,  1);           /* 4713BC Jan 1st midnight */
+    Test3 (-4712,  1,  1, 12, 0, 0); /* 4713BC Jan 1st noon */
     return 0;
 }
 
@@ -48,6 +50,10 @@ static const char tfmt[] = "%Y-%m-%d.%H:%M:%S_%j_%w";
 }
 
 static void Test2 (int y, int m, int d) {
+    Test3 (y, m, d, 0, 0, 0);
+}
+
+static void Test3 (int y, int m, int d, int H, int M, int S) {
     struct tm jtm;
     time_t t;
 
@@ -55,6 +61,9 @@ static void Test2 (int y, int m, int d) {
     jtm.tm_year= y-1900;
     jtm.tm_mon=  m-1;
     jtm.tm_mday= d;
+    jtm.tm_hour= H;
+    jtm.tm_min=  M;
+    jtm.tm_sec=  S;
     t= julian_timegm (&jtm);
     Test1 (t);
 }

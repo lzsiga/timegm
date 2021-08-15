@@ -13,9 +13,17 @@
   -4712-01-01 -4713-11-24 (Julian day (JDN) starts on this day 12:00 UTC)
  */
 
+#include <stdint.h>
 #include <time.h>
 
 time_t     julian_timegm   (struct tm *tm);
 struct tm *julian_gmtime_r (const time_t *t, struct tm *tm);
+
+typedef struct JulianDate {
+    int32_t jd_day; /* 0.. */
+    int32_t jd_sec; /* 0..86399 */
+} JulianDate;
+
+int tstamp2jd (const time_t *t, JulianDate *jd);
 
 #endif
