@@ -29,6 +29,7 @@ int main (void) {
     Test3 (-4712,  1,  1, 12, 0, 0); /* 4713BC Jan 1st noon */
 
     Test4 (2456293, 45000);
+    Test4 (      0,     0);
     return 0;
 }
 
@@ -50,7 +51,7 @@ static const char tfmt[] = "%Y-%m-%d.%H:%M:%S_%j_%w";
 
     strftime (sg, sizeof sg, tfmt, &gtm);
     strftime (sj, sizeof sj, tfmt, &jtm);
-    printf ("%13lld  PGD %26s  PJD %26s\n", (long long)t, sg, sj);
+    printf ("%13lld  PGC %26s  PJC %26s\n", (long long)t, sg, sj);
 }
 
 static void Test2 (int y, int m, int d) {
@@ -78,6 +79,9 @@ static void Test4 (int jday, int jsec) {
     JulianDate jd2= {-1, -1};
     int64_t ts;
     struct tm jtm, gtm;
+static const char tfmt[] = "%Y-%m-%d.%H:%M:%S";
+    char sj [32];
+    char sg [32];
 
     printf ("\njulian date test %d,%d\n", jday, jsec);
 
@@ -108,4 +112,7 @@ static void Test4 (int jday, int jsec) {
        julian_gmtime_r (&t, &jtm);
        gmtime_r (&t, &gtm);
     }
+    strftime (sg, sizeof sg, tfmt, &gtm);
+    strftime (sj, sizeof sj, tfmt, &jtm);
+    printf ("PGC: %s  PJC: %s\n", sg, sj);
 }
