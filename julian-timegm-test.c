@@ -11,6 +11,8 @@ static void Test1 (time_t t);
 static void Test2 (int y, int m, int d);
 static void Test3 (int y, int m, int d, int H, int M, int S);
 
+static void Test4 (int jday, int jsec);
+
 int main (void) {
     int i;
 
@@ -25,6 +27,8 @@ int main (void) {
     Test2 (  299, 12, 31);
     Test2 (-4712,  1,  1);           /* 4713BC Jan 1st midnight */
     Test3 (-4712,  1,  1, 12, 0, 0); /* 4713BC Jan 1st noon */
+
+    Test4 (2456293, 45000);
     return 0;
 }
 
@@ -66,4 +70,42 @@ static void Test3 (int y, int m, int d, int H, int M, int S) {
     jtm.tm_sec=  S;
     t= julian_timegm (&jtm);
     Test1 (t);
+}
+
+static void Test4 (int jday, int jsec) {
+    JulianDate jd= {jday, jsec};
+    double d, d2;
+    JulianDate jd2= {-1, -1};
+    int64_t ts;
+    struct tm jtm, gtm;
+
+    printf ("\njulian date test %d,%d\n", jday, jsec);
+
+    julian_jd2d (&jd, &d);
+    julian_d2jd (d, &jd2);
+    printf ("jd %d,%d -> %16.6f -> %d,%d\n"
+        , (int)jd.jd_day, (int)jd.jd_sec
+        , d
+        , (int)jd2.jd_day, (int)jd2.jd_sec);
+
+    julian_jd2tstamp (&jd, &ts);
+    julian_tstamp2jd (ts, &jd2);
+    printf ("jd %d,%d -> unix=%lld -> %d,%d\n"
+        , (int)jd.jd_day, (int)jd.jd_sec
+        , (long long)ts
+        , (int)jd2.jd_day, (int)jd2.jd_sec);
+
+    julian_d2tstamp (d, &ts);
+    julian_tstamp2d (ts, &d2);
+    printf ("jd %16.6f -> unix=%lld -> %16.6f\n"
+        , d
+        , (long long)ts
+        , d2);
+
+    {
+       time_t t= ts;
+
+       julian_gmtime_r (&t, &jtm);
+       gmtime_r (&t, &gtm);
+    }
 }

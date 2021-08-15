@@ -9,6 +9,8 @@
 #include <string.h>
 #include <time.h>
 
+#include "julian-timegm.h"
+
 time_t julian_timegm (struct tm *tm);
 struct tm *julian_gmtime_r (const time_t *t, struct tm *tm);
 
@@ -27,8 +29,7 @@ static const int mlen [2][12] = {
 
 /* Unix Epoch Time is PJD 1969-12-19 which 13 days before PJD 1970-01-01 */
 
-time_t julian_timegm (struct tm *tm)
-{
+time_t julian_timegm (struct tm *tm) {
     static const int tmstr_year= 1900; /* base of 'tm_year' in 'struct tm' */
     int year, ytmp, dtmp, ytmpe, dtmpe;
     int isleapyear;
@@ -84,8 +85,7 @@ time_t julian_timegm (struct tm *tm)
     return t;
 }
 
-struct tm *julian_gmtime_r (const time_t *t, struct tm *tm)
-{
+struct tm *julian_gmtime_r (const time_t *t, struct tm *tm) {
 /* rebase from: GD 1970-01-01 = JD 1969-12-19 */
 /*          to: JD-9999-01-01 */
 static const int32_t dayoffset= 4371664;
@@ -133,7 +133,53 @@ static const int32_t yearoffs=  9999;
     return tm;
 }
 
-int tstamp2jd (const time_t *t, JulianDate *jd)
-{
-    long long tmp= t;
+int julian_jd2d (const JulianDate *jd, double *d) {
+    *d= (double)jd->jd_day + jd->jd_sec/86400.0;
+    return 0;
+}
+
+int julian_d2jd (double d, JulianDate *jd) {
+    int32_t dtmp;
+    if (d<=INT32_MIN || d>=INT32_MAX) {
+        jd->jd_day= 0;
+        jd->jd_sec= 0;
+        return -1;
+    }
+    dtmp= d + 0.5/86400;
+    jd->jd_day= dtmp;
+    if (dtmp>=d) jd->jd_sec= 0;
+    else         jd->jd_sec= (d-dtmp)*86400;
+    return 0;
+}
+
+int julian_tstamp2jd (int64_t unixts, JulianDate *jd) {
+    int64_t tmp= unixts - JDATE_START_UNIXTS;
+    int64_t tday= tmp/86400;
+    int32_t tsec;
+
+    if (tday<=INT32_MIN || tday>=INT32_MAX) {
+        jd->jd_day= 0;
+        jd->jd_sec= 0;
+        return -1;
+    }
+    jd->jd_day= (int32_t)tday;
+    tsec= tmp%86400;
+    if (tsec<0) tsec += 86400;
+    jd->jd_sec= tsec;
+    return 0;
+}
+
+int julian_jd2tstamp (const JulianDate *jd, int64_t *unixts) {
+    *unixts = jd->jd_day*86400LL + jd->jd_sec + JDATE_START_UNIXTS;
+    return 0;
+}
+
+int julian_tstamp2d (int64_t unixts, double *d) {
+    *d= (unixts - JDATE_START_UNIXTS)/86400.0;
+    return 0;
+}
+
+int julian_d2tstamp (double d, int64_t *unixts) {
+    *unixts = d*86400 + JDATE_START_UNIXTS;
+    return 0;
 }
