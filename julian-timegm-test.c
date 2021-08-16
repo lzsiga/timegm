@@ -1,4 +1,4 @@
-/* julian_timegm_test.c */
+/* julian-timegm-test.c */
 
 #include <stdio.h>
 #include <stdlib.h>
