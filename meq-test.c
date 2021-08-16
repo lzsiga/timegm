@@ -13,10 +13,12 @@
 
 static void DoOne (int y);
 
-int main (void) {
+int main (int argc, char **argv) {
     int i;
+    int step= 1;
 
-    for (i=-999; i<2100; ++i) {
+    if (argc>=2 && strcasecmp (argv[1], "-l")==0) { step= 4; }
+    for (i=-1000; i<=2100; i += step) {
         DoOne (i);
     }
     return 0;
@@ -46,5 +48,5 @@ static const char tfmt[] = "%Y-%m-%d.%H:%M";
 
     strftime (sg, sizeof sg, tfmt, &gtm);
     strftime (sj, sizeof sj, tfmt, &jtm);
-    printf ("%5d: PJC: %16s  PGC: %16s\n", y, sj, sg);
+    printf ("%6d: PJC: %16s  PGC: %16s\n", y, sj, sg);
 }
