@@ -11,9 +11,6 @@
 
 #include "julian-timegm.h"
 
-time_t julian_timegm (struct tm *tm);
-struct tm *julian_gmtime_r (const time_t *t, struct tm *tm);
-
 static const int32_t epoch_year= 1970; /* unix timestamp epoch */
 static const int32_t base_year=  -9999;  /* start of a 100-year period */
 static const int32_t secPday=    24L*60*60;
@@ -27,7 +24,7 @@ static const int mlen [2][12] = {
     { 31, 29, 31, 30,  31,  30,  31,  31,  30,  31,  30, 31}
 };
 
-/* Unix Epoch Time is PJD 1969-12-19 which 13 days before PJD 1970-01-01 */
+/* Unix Epoch Time is PJC 1969-12-19 which 13 days before PGC 1970-01-01 */
 
 time_t julian_timegm (struct tm *tm) {
     static const int tmstr_year= 1900; /* base of 'tm_year' in 'struct tm' */

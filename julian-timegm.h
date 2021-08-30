@@ -20,8 +20,8 @@ time_t     julian_timegm   (struct tm *tm);
 struct tm *julian_gmtime_r (const time_t *t, struct tm *tm);
 
 /* Julian day: https://en.wikipedia.org/wiki/Julian_day
-   it can be represented via struct 'JulianData' or a floating point
-   number (of type 'double'), where the integer part is the number, eg.:
+   it can be represented via struct 'JulianDate' or a floating point
+   number (of type 'double'), where the integer part is the day number, eg.:
 
     JulianDate    double        PJC                 PGC
     ----------    ---------     ------------------- -------------------
