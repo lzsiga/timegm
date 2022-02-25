@@ -24,7 +24,9 @@ static const int mlen [2][12] = {
     { 31, 29, 31, 30,  31,  30,  31,  31,  30,  31,  30, 31}
 };
 
-/* Unix Epoch Time is PJC 1969-12-19 which 13 days before PGC 1970-01-01 */
+/* Unix Epoch Time is PJC 1969-12-19 00:00:00
+              that is PGC 1970-01-01 00:00:00
+   which means 13 days shift between the two calendars */
 
 time_t julian_timegm (struct tm *tm) {
     static const int tmstr_year= 1900; /* base of 'tm_year' in 'struct tm' */
