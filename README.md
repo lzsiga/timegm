@@ -10,3 +10,7 @@ future (so don't use this as a validator function).
 
 Supported range for 64-bit time_t: 0-9999 years (might be increased later)
 mind you, it is proleptic Gregorian (https://en.wikipedia.org/wiki/Proleptic_Gregorian_calendar)
+
+Unrelated:
+  aix-mem.c: some other functions that are missing from AIX:
+  mempcpy, memrchr, strlcpy, strlcat, stpncpy, strmode
