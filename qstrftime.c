@@ -5,9 +5,13 @@
 #include <string.h>
 #include <time.h>
 
-/* usage: %q => 1/2/3/4 (jan-mar, apr-jun, jul-aug, sep-dec) */
-/* at compilation: -Dstrtime=qsrtftime */
-/* compile with -std=c89 or newer */
+/* usage: %q => 1/2/3/4 (jan-mar, apr-jun, jul-aug, sep-dec)
+   at compilation: -Dstrtime=qsrtftime
+   compile with -std=c89 or newer
+
+   when using with cronolog, add option --period, eg:
+   cronolog --period=1months mylog.%YQ%q
+ */
 
 size_t qstrftime(char *buf, size_t bufsize, const char *fmt, const struct tm *tm);
 
