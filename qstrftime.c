@@ -43,8 +43,9 @@ size_t qstrftime(char *buf, size_t bufsize, const char *fmt, const struct tm *tm
         if (slen) {
             memcpy(to, from, slen);
             to += slen;
-            from += slen+2;
+            from += slen;
         }
+        from += 2;
         *to++ = '1'+quarter; /* '1'..'4' */
         pq= strstr(from, PERCENTQ);
     } while (pq);
@@ -78,6 +79,7 @@ int main(int argc, const char **argv) {
     if (argc<2) {
         Test1("%Y%m%d.%H%M%S", &tm);
         Test1("%Y%m%d.%q.%H%M%S.%q", &tm);
+        Test1("%q%q%q", &tm);
     } else {
         int i;
 
